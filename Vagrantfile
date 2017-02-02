@@ -26,4 +26,5 @@ Vagrant.configure('2') do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.provision "shell", inline: $script
   #config.vm.box_version = "1.1.0"
+  config.vm.network :forwarded_port, guest: 9090, host: 9090 # blockchain explorer
 end
