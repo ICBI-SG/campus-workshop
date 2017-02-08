@@ -40,3 +40,15 @@ vp0:
       peer node start
   links:
     - membersrvc
+
+explorer:
+    image: yeasy/blockchain-explorer
+    hostname: explorer
+    environment:
+     - HYP_REST_ENDPOINT=http://vp0:7050
+    expose:
+     - "9090"
+    ports:
+     - "9090:9090"
+    links:
+     - vp0
