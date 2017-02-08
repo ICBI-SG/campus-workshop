@@ -95,6 +95,37 @@ docker pull yeasy/hyperledger-fabric:0.6-dp \
   && docker tag yeasy/hyperledger-fabric-base:0.6-dp hyperledger/fabric-baseimage \
   && docker tag yeasy/hyperledger-fabric:0.6-dp hyperledger/fabric-membersrvc
 
+#install npm
+apt-get install -y npm
+
+#install GO
+# gcc for cgo
+apt-get update && apt-get install -y --no-install-recommends \
+		g++ \
+		gcc \
+		libc6-dev \
+		make \
+		pkg-config \
+	&& rm -rf /var/lib/apt/lists/*
+
+export GOLANG_VERSION=1.7.5
+GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
+GOLANG_DOWNLOAD_SHA256=2e4dd6c44f0693bef4e7b46cc701513d74c3cc44f2419bf519d7868b12931ac3
+
+curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
+	&& echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
+	&& tar -C /usr/local -xzf golang.tar.gz \
+	&& rm golang.tar.gz
+
+GOPATH=/go
+
+mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
+printf "\n\nexport GOPATH=${GOPATH}\nexport PATH=$GOPATH/bin:/usr/local/go/bin:$PATH\n" >> /home/vagrant/.profile
+
+mkdir -p $GOPATH/src/github.com/hyperledger
+cd $GOPATH/src/github.com/hyperledger ; git clone -b v0.6 https://github.com/hyperledger/fabric.git
+chown vagrant:vagrant -R $GOPATH/src
+
 # Set Go environment variables needed by other scripts
 # export GOPATH="/opt/gopath"
 # export GOROOT="/opt/go/"
