@@ -4,8 +4,8 @@ membersrvc:
     restart: unless-stopped
     ports:
       - "7054:7054"
-    # volumes:
-    #   - membersrvc-data:/var/hyperledger/production
+    volumes:
+      - "${PWD}/config/asset.yaml:/opt/gopath/src/github.com/hyperledger/fabric/membersrvc.yaml"
     command: membersrvc  
 
 # validating node as the root
@@ -35,9 +35,8 @@ vp0:
     - "7051:7051"
   volumes: &vol
     - /var/run/docker.sock:/var/run/docker.sock
-      # - vp0-data:/var/hyperledger/production
   command:
-      peer node start
+      "sh -c 'sleep 1; peer node start'"
   links:
     - membersrvc
 

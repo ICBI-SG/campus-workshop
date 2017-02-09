@@ -1,0 +1,17 @@
+{
+  "name": "hfc",
+  "version": "0.6.1",
+  "description": "hyperledger fabric example: asset_management02",
+  "scripts": {
+      "start": "example.js"
+   },
+  "dependencies": {
+    "hfc": "^0.6.1",
+    "util": "^0.10.3",
+    "crypto": "0.0.3",
+    "x509": "^0.2.6",
+    "fs": "0.0.2"
+  },
+  "devDependencies": {
+  }
+}

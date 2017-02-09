@@ -97,6 +97,12 @@ docker pull yeasy/hyperledger-fabric:0.6-dp \
 
 #install npm
 apt-get install -y npm
+npm install -g npm
+rm /usr/local/bin/npm
+ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+npm install -g n
+n 6.5.0
+
 
 #install GO
 # gcc for cgo
