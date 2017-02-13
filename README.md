@@ -58,14 +58,14 @@ vagrant$ mv /vagrant/asset_management_02 /home/vagrant
 Then we go in and build the `nodejs` code
 ```
 vagrant$ cd /home/vagrant/asset_management_02
-vagrant$ node install
+vagrant$ npm install
 ```
 This will take about a minute or so. Next we deploy the blockchain. For purposes
 of this tutorial, we will just deploy a *single blockchain node along with a
 membersrvc node* to make it easier to debug. A deployment of a full network can
 be attempted later. To deploy do:
 ```
-vagrant$ cd /home/vagrant/asset_management_02
+vagrant$ cd /vagrant
 vagrant$ docker-compose up
 ```
 
@@ -75,9 +75,10 @@ the appropriate place (with the `$GOPATH`=`/go`)
 vagrant$ cp -r /home/vagrant/asset_management_02/chaincode /go/src/github.com/asset_management_with_roles
 ```
 
-Next we run deploy
+Next we run deploy in the application folder
 ```
-vagrant$ node example.js setup
+vagrant$ cd /vagrant
+vagrant$ node example.js deploy
 
 ## prints out
 
@@ -115,13 +116,13 @@ vagrant$ docker ps
 
 ## prints out
 # dev-vp0-7a3f0f826fa4f73b2ffc7defd02795824b466ad63990790d935f89104bf22ff8
-# this is the name of the chaincode docker container  note the chaincode id
+# this is the name of the chaincode docker container  note the chaincode id is found here "dev-vp0-<chaincodeid>"
 ```
 
-Next we assign an asset to alice. 
+Next we assign an asset to alice using the chaincode id. 
 
 ```
-vagrant$ node example.js assign
+vagrant$ CHAINCODE_CODE=<chaincodeid> node example.js assign
 
 ## prints out 
 
