@@ -1,6 +1,8 @@
 # Campus hyperledger/fabric workshop
 
-This is repository for the workshop materials for Campus hyperledger fabric workshop
+This is repository for the workshop materials for Campus hyperledger fabric workshop. Please follow the steps below to pre-install some file before the workshop. 
+
+**Please do this before the workshop as it can take some time to install and requires a good internet connection
 
 ## Pre-requisites
 
@@ -80,7 +82,7 @@ vagrant$ cp -r /home/vagrant/asset_management_02/chaincode /go/src/github.com/as
 
 Next we run deploy in the application folder
 ```
-vagrant$ cd /vagrant
+vagrant$ cd /home/vagrant/asset_management_02
 vagrant$ node example.js deploy
 
 ## prints out
@@ -112,6 +114,7 @@ vagrant$ node example.js deploy
 # chaincodeID:7a3f0f826fa4f73b2ffc7defd02795824b466ad63990790d935f89104bf22ff8
 # setup successful
 ```
+***********************YOU CAN STOP HERE, WE WILL CONTINUE THE REST AT THE WORKSHOP********************************
 
 You can see the chaincode running as a seperate docker container. Take note of the chaincode ID (in the above example, the chaincodeID = 7a3f0f826fa4f73b2ffc7defd02795824b466ad63990790d935f89104bf22ff8.
 ``` 
