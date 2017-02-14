@@ -23,7 +23,7 @@ Then move into the cloned directory and bring up the `Vagrant` machine.
 $ cd campus-workshop
 $ vagrant up
 ```
-This takes around 10~15 minutes to download an `Ubuntu` image and
+This takes around 10~15 minutes (speed depends on your internet connection) to download an `Ubuntu` image and
 `hyperledger/fabric` software for the workshop.
 
 Then login into the machine
