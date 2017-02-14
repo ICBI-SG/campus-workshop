@@ -7,17 +7,20 @@ This is repository for the workshop materials for Campus hyperledger fabric work
 Download `Virtualbox` from [here](https://www.virtualbox.org/wiki/Downloads) for the
 specific operating system you are using.
 
-
 Download `Vagrant` from [here](https://www.vagrantup.com/downloads.html) for the
 specific operating system you are using.
 
-The first step is to pull this code to your local machine. Clone this `git` repository by going to your favourite shell and typing the following.
+Download `Git` from [here](https://git-scm.com/downloads) for the
+specific operating system you are using. This also installs "Git Bash"
+
+The first step is to pull this code to your local machine. Clone this `git` repository by opening "Git Bash" (or going to your favourite shell) and typing the following:
 ```
-$ git clone https://github.com/icbi/campus-demo.git
+$ git clone https://github.com/ICBI-SG/campus-workshop.git
 ```
 
-Then move into the cloned directory and bringup the machine.
+Then move into the cloned directory and bring up the `Vagrant` machine.
 ```
+$ cd campus-workshop
 $ vagrant up
 ```
 This takes around 10~15 minutes to download an `Ubuntu` image and
