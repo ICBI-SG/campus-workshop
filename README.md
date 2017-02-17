@@ -73,4 +73,15 @@ be attempted later. To deploy do:
 vagrant$ cd /vagrant
 vagrant$ docker-compose up
 ```
-****You are now ready for the workshop!****
+You will see the following:
+```
+Creating vagrant_membersrvc_1
+Creating vagrant_vp0_1
+Creating vagrant_explorer_1
+Attaching to vagrant_membersrvc_1, vagrant_vp0_1, vagrant_explorer_1
+membersrvc_1  | 03:40:31.492 [server] main -> INFO 001 CA Server ()
+membersrvc_1  | 03:40:31.493 [ca] NewCA -> INFO 002 Fresh start; creating databases, key pairs, and certificates.
+membersrvc_1  | 03:40:31.822 [aca] Start -> INFO 003 Staring ACA services...
+...
+```
+****Congratulations! You have succesfully deployed your first blockchain on Hyperledger Fabric. We will continue the rest of the tutorial at the workshop. See you there!****
