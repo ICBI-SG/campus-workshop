@@ -38,13 +38,19 @@ var chain, chaincodeID;
 var chaincodeName = "mycc3";
 chaincodeID = process.env.CHAINCODE_ID || null;
 
-var aliceAccount = "12345-56789";
-var aliceAttributeList=["role", "account" ];
-var aliceAttributeValueList=["client", aliceAccount ];
+var accountInformation = {
+    alice: {
+        account: "12345-56789",
+        attributeList: ["role", "account" ],
+        attributeValueList: ["client", "12345-56789"],
+    }, 
+    bob: {
+        account:  "23456-67890",
+        attributeList: ["role", "account" ],
+        attributeValueList: ["client", "23456-67890"],
+    }
+};
 
-var bobAccount = "23456-67890";
-var bobAttributeList=["role", "account" ];
-var bobAttributeValueList=["client", bobAccount ];
 
 var username = process.env.SDK_DEFAULT_USER;
 var usersecret = process.env.SDK_DEFAULT_SECRET;
@@ -197,7 +203,30 @@ function assignOwner(user,owner,cb) {
         fcn: "assign",
         args: ["MyAsset",owner],
         userCert: user.cert,
-        attrs: aliceAttributeList
+        attrs: ["role", "account"], 
+    };
+    console.log("assign: invoking %j",req);
+    var tx = user.invoke(req);
+    tx.on('submitted', function (results) {
+        console.log("assign transaction ID: %j", results);
+    });
+    tx.on('complete', function (results) {
+        console.log("assign invoke complete: %j", results);
+        return cb();
+    });
+    tx.on('error', function (err) {
+        console.log("assign invoke error: %j", err);
+        return cb(err);
+    });
+}
+
+function transferOwner(user,owner,cb) {
+    var req = {
+        chaincodeID: chaincodeID,
+        fcn: "transfer",
+        args: ["MyAsset",owner],
+        userCert: user.cert,
+        attrs: ["role", "account"], 
     };
     console.log("assign: invoking %j",req);
     var tx = user.invoke(req);
@@ -240,17 +269,17 @@ function checkOwner(user,ownerAccount,cb) {
     });
 }
 
-function build_assignment(to, from) {
+function build_assignment(f, to, from) {
     console.log("to", to);
     var assign = function (users, cb) {
         users[to.user].getUserCert(to.attributeList, function (err, cert) {
-            if (err) console.log("Failed getting Application certificate for Alice.");
+            if (err) console.log("Failed getting Application certificate.");
             checkCertExtensions(cert, to.attributeValues, function(err) {
                 if(err){
                     cb(err);
                 }
             });
-            assignOwner(users[from.user], cert.encode().toString('base64'), function(err) {
+            f(users[from.user], cert.encode().toString('base64'), function(err) {
                 if (err) {
                     console.log("error: "+err.toString());
                     cb(err);
@@ -271,21 +300,39 @@ function build_assignment(to, from) {
     return assign;
 }
 
-function pick(mode) {
+function pick(args) {
 
+    var mode = args[2];
     switch (mode) {
         case "deploy": 
             return deploy;
         case "assign": 
+            var username = args[3];
+            var info = accountInformation[username];
             return build_assignment(
+                assignOwner,
                 {
-                    user: "alice",
-                    attributeList: aliceAttributeList,
-                    attributeValues: aliceAttributeValueList,
-                    account: aliceAccount,
+                    user: username,
+                    attributeList: info.attributeList,
+                    attributeValues: info.attributeValueList,
+                    account: info.account,
                 }, 
                 {
                     user: "assigner",
+                });
+        case "transfer": 
+            var username = args[3];
+            var info = accountInformation[username];
+            return build_assignment(
+                transferOwner,
+                {
+                    user: username,
+                    attributeList: info.attributeList,
+                    attributeValues: info.attributeValueList,
+                    account: info.account,
+                }, 
+                {
+                    user: args[4],
                 });
     }
 }
@@ -294,16 +341,15 @@ if (require.main === module) {
 
 
     // run
-    var mode = process.argv[2];
     setup(
-        pick(mode),
+        pick(process.argv),
         function(err) {
             if (err) {
                 console.log("error: "+err.toString());
                 // Exit the test script after a failure
                 process.exit(1);
             } else {
-                console.log(mode, "done");
+                console.log(process.argv, "done");
             }
         }
     );
