@@ -85,9 +85,7 @@ You can inspect the chaincode logs also by typing
 vagrant$ docker logs -f dev-vp0-<chaincodeID>
 ```
 
-## Blockchain explorer
-
-## Troubleshooing
+## Troubleshooting
 
 -   "no rows in sql"
 
