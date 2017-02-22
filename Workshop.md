@@ -51,7 +51,7 @@ vagrant$ docker ps
 Next we assign an asset to alice using the chaincode id. 
 
 ```
-vagrant$ CHAINCODE_CODE=<chaincodeid> node example.js assign
+vagrant$ CHAINCODE_ID=<chaincodeid> node example.js assign
 
 ## prints out 
 
