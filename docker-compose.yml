@@ -49,5 +49,7 @@ explorer:
      - "9090"
     ports:
      - "9090:9090"
+    command:
+        "sh -c 'sleep 10; node exp-server.js'"
     links:
      - vp0
