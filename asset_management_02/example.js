@@ -36,7 +36,6 @@ var x509 = require('x509');
 
 var chain, chaincodeID;
 var chaincodeName = "mycc3";
-var deployer, alice, bob, assigner;
 chaincodeID = process.env.CHAINCODE_ID || null;
 
 var aliceAccount = "12345-56789";
@@ -125,26 +124,27 @@ function checkCertExtensions(certbuf, attV, cb) {
 
 // Create the chain and enroll users as deployer, assigner, and nonAssigner (who doesn't have privilege to assign.
 function setup(target, cb) {
+   var users = {};
    console.log("initializing ...");
    var chain = tutil.getTestChain();
    if (devMode) chain.setDevMode(true);
    console.log("enrolling " + chainDeployer.name + "...");
    chain.enroll(chainDeployer.name, chainDeployer.secret, function (err, user) {
       if (err) return cb(err);
-      deployer = user;
+      users.deployer = user;
       console.log("enrolling " + chainAssigner.name + "...");
       chain.enroll(chainAssigner.name, chainAssigner.secret, function (err, user) {
          if (err) return cb(err);
-         assigner = user;
+         users.assigner = user;
          console.log("enrolling " + chainUser1.name + "...");
          chain.enroll(chainUser1.name, chainUser1.secret, function (err, user) {
             if (err) return cb(err);
-            alice = user;
+            users.alice = user;
             console.log("enrolling " + chainUser2.name + "...");
             chain.enroll(chainUser2.name, chainUser2.secret, function (err, user) {
                if (err) return cb(err);
-               bob = user;
-               return target(cb);
+               users.bob = user;
+               return target(users,cb);
             });
          });
       });
@@ -152,7 +152,7 @@ function setup(target, cb) {
 }
 
 // Deploy asset_management_with_roles with the name of the assigner role in the metadata
-function deploy(cb) {
+function deploy(users,cb) {
     var deployCert;
     if (tutil.tlsOn) {
        deployCert = tutil.caCert
@@ -174,7 +174,7 @@ function deploy(cb) {
     } else {
        req.chaincodePath = testChaincodePath;
     }
-    var tx = deployer.deploy(req);
+    var tx = users.deployer.deploy(req);
     tx.on('submitted', function (results) {
         console.log("deploy submitted: %j", results);
     });
@@ -240,31 +240,35 @@ function checkOwner(user,ownerAccount,cb) {
     });
 }
 
-function assign(cb) {
-    alice.getUserCert(aliceAttributeList, function (err, aliceCert) {
-        if (err) console.log(t, "Failed getting Application certificate for Alice.");
-        checkCertExtensions(aliceCert, aliceAttributeValueList, function(err) {
-            if(err){
-                cb(err);
-            }
-        });
-        assignOwner(assigner, aliceCert.encode().toString('base64'), function(err) {
-            if (err) {
-                console.log("error: "+err.toString());
-                cb(err);
-            } else {
-                checkOwner(assigner, aliceAccount, function(err) {
-                    if(err){
-                        console.log("error: "+err.toString());
-                        cb(err);
-                    } else {
-                        console.log("assign successful");
-                        cb();
-                    }
-                });
-            }
-        });
-    })
+function build_assignment(to, from) {
+    console.log("to", to);
+    var assign = function (users, cb) {
+        users[to.user].getUserCert(to.attributeList, function (err, cert) {
+            if (err) console.log("Failed getting Application certificate for Alice.");
+            checkCertExtensions(cert, to.attributeValues, function(err) {
+                if(err){
+                    cb(err);
+                }
+            });
+            assignOwner(users[from.user], cert.encode().toString('base64'), function(err) {
+                if (err) {
+                    console.log("error: "+err.toString());
+                    cb(err);
+                } else {
+                    checkOwner(users[from.user], to.account, function(err) {
+                        if(err){
+                            console.log("error: "+err.toString());
+                            cb(err);
+                        } else {
+                            console.log("assign flow complete");
+                            cb();
+                        }
+                    });
+                }
+            });
+        })
+    };
+    return assign;
 }
 
 function pick(mode) {
@@ -273,9 +277,19 @@ function pick(mode) {
         case "deploy": 
             return deploy;
         case "assign": 
-            return assign;
+            return build_assignment(
+                {
+                    user: "alice",
+                    attributeList: aliceAttributeList,
+                    attributeValues: aliceAttributeValueList,
+                    account: aliceAccount,
+                }, 
+                {
+                    user: "assigner",
+                });
     }
 }
+
 if (require.main === module) {
 
 
@@ -289,41 +303,11 @@ if (require.main === module) {
                 // Exit the test script after a failure
                 process.exit(1);
             } else {
-                console.log(mode + " successful");
+                console.log(mode, "done");
             }
         }
     );
 
 
-// test('not assign asset management with roles', function (t) {
-//     t.plan(1);
-// 
-//     bob.getUserCert(["role", "account"], function (err, bobCert) {
-//         if (err) t.fail(t, "Failed getting Application certificate for Bob.");
-//         checkCertExtensions(bobCert, bobAttributeValueList, function(err) {
-//             if(err){
-//                 t.fail("error: "+err.toString());
-//             }
-//         });
-//         assignOwner(alice, bobCert.encode().toString('base64'), function(err) {
-//             if (err) {
-//                 t.fail("error: "+err.toString());
-//                 // Exit the test script after a failure
-//                 process.exit(1);
-//             } else {
-//                 checkOwner(alice, bobAccount, function(err) {
-//                     if(err){
-//                         t.pass("assign successful");
-//                     } else {
-//                         err = new Error ("this user should not have been allowed to assign");
-//                         t.fail("error: "+err.toString());
-//                         // Exit the test script after a failure
-//                         process.exit(1);
-//                     }
-//                 });
-//             }
-//         });
-//     });
-// });
 }
 
