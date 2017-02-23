@@ -30,7 +30,7 @@ Going to show a classical asset management example.
 
 ### Step 1
 
-First deploy the chaincode. First, open a new shell (Git Bash or other). Next, we have to move the chaincode to
+First deploy the chaincode. First, open a new shell (Git Bash or other). Login to the virtual machine with `vagrant ssh`. Next, we have to move the chaincode to
 the appropriate place (with the `$GOPATH`=`/go`)
 ```
 vagrant$ cp -r /home/vagrant/asset_management_02/chaincode /go/src/github.com/asset_management_with_roles
