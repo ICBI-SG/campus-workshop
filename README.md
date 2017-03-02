@@ -23,6 +23,7 @@ $ git clone https://github.com/ICBI-SG/campus-workshop.git
 Then move into the cloned directory and bring up the `Vagrant` machine.
 ```
 $ cd campus-workshop
+$ dos2unix *
 $ vagrant up
 ```
 This takes around 10~15 minutes (speed depends on your internet connection) to download an `Ubuntu` image and
